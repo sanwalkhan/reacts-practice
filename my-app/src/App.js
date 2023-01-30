@@ -1,47 +1,107 @@
-// import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Outlet,
+  useParams
+} from "react-router-dom";
 
-function App() {
+export default function App() {
+  return (
+    <Router>
+      <nav>
+        <Link to="/">Home</Link>
+        <Link to="/launch">Launch</Link>
+      </nav>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="launch" element={<Launch />}>
+          <Route path="/" element={<LaunchIndex />} />
+          <Route path=":slug" element={<LaunchShoe />} />
+        </Route>
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+    </Router>
+  );
+}
+
+function NotFound() {
   return (
     <div>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <div class="container-fluid">
-    <a class="navbar-brand" > TextUtils </a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-        <li class="nav-item">
-          <a class="nav-link active" aria-current="page" >Home</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" >About</a>
-        </li>
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle"  id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-            Services
-          </a>
-          <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
-            <li><a class="dropdown-item" >Action</a></li>
-            <li><a class="dropdown-item" >Another action</a></li>
-            <li><hr class="dropdown-divider"/></li>
-            <li><a class="dropdown-item" >Something else here</a></li>
-          </ul>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link disabled">_____</a>
-        </li>
-      </ul>
-      <form class="d-flex">
-        <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search"/>
-        <button class="btn btn-outline-success" type="submit">Search</button>
-      </form>
-    </div>
-  </div>
-</nav>
+      <h1>Not found!</h1>
+      <p>Sorry your page was not found!</p>
     </div>
   );
 }
 
-export default App;
+function Home() {
+  return (
+    <div>
+      <h1>Welcome Home!</h1>
+    </div>
+  );
+}
+
+function Launch() {
+  return (
+    <div>
+      <h1>Launch</h1>
+
+      <Outlet />
+    </div>
+  );
+}
+
+function LaunchIndex() {
+  return (
+    <ul>
+      {Object.entries(shoes).map(([slug, { name, img }]) => (
+        <li key={slug}>
+          <Link to={`/launch/${slug}`}>
+            <h2>{name}</h2>
+            <img src={img} alt={name} />
+          </Link>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+function LaunchShoe() {
+  const { slug } = useParams();
+  const shoe = shoes[slug];
+
+  if (!shoe) {
+    return <h2>Not Found!</h2>;
+  }
+
+  const { name, img } = shoe;
+
+  return (
+    <div>
+      <h2>{name}</h2>
+      <img src={img} alt={name} />
+    </div>
+  );
+}
+
+const shoes = {
+  "air-jordan-3-valor-blue": {
+    name: "VALOUR BLUE",
+    img:
+      "https://secure-images.nike.com/is/image/DotCom/CT8532_104_A_PREM?$SNKRS_COVER_WD$&align=0,1"
+  },
+  "jordan-mars-270-london": {
+    name: "JORDAN MARS 270 LONDON",
+    img:
+      "https://secure-images.nike.com/is/image/DotCom/CV3042_001_A_PREM?$SNKRS_COVER_WD$&align=0,1"
+  },
+  "air-jordan-1-zoom-racer-blue": {
+    name: "RACER BLUE",
+    img:
+      "https://secure-images.nike.com/is/image/DotCom/CK6637_104_A_PREM?$SNKRS_COVER_WD$&align=0,1"
+  }
+};
